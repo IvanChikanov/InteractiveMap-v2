@@ -67,6 +67,7 @@ class PopupMarker extends MarkerSuper
         loadImageText.innerText = "Картинка к полному тексту:";
         let imageInput = HTML.createAndAppend("INPUT", this.mainInPopup);
         imageInput.type = "file";
+        imageInput.setAttribute("accept", "image/png, image/jpg");
         imageInput.addEventListener("change", ()=>{
             UComm.updateImageUnit(imageInput.files[0], this.insideMarkerUnit);
         });

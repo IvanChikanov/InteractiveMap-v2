@@ -84,43 +84,7 @@ class InteractiveMap
         this.mainFieldGrid = HTML.create("DIV");
         HTML.addStyles(["grid", "maxWidthInherit", "widthInherit"],[this.mainFieldGrid]);
     }
-    relationTypeLoad()
-    {
-        if(this.relationColumn && this.relColumn == null)
-        {
-            this.mainFieldGrid.style.gridTemplateColumns = "80% 20%";
-            this.relColumn = HTML.createAndAppend("DIV", this.mainFieldGrid);
-            this.relColumn.style.gridArea = "2/2/3/3";
-            this.relColumn.style.display = "grid";
-            this.relColumn.style.gridAutoFlow = "row";
-            this.relColumn.style.gap = "5px";   
-            this.relColumn.style.height = this.relColumn.getBoundingClientRect().height + "px";
-            this.mainFieldGrid.style.gridTemplateRows = "repeat(3, auto)";
-            this.checkButton = HTML.createAndAppend("BUTTON", this.mainFieldGrid);
-            this.checkButton.innerText = "Проверить";
-            this.checkButton.style.gridArea = "3/1/4/3";
-            this.checkButton.style.justifySelf = "center";
-            this.checkButton.onclick = ()=>{
-                let result = true;
-                for(let rmkr of this.relationMarkers)
-                {
-                    if(!rmkr.check())
-                    {
-                        result = false;
-                        break;
-                    }
-                }
-                if(result)
-                {
-                    this.paintLines("green");
-                }
-                else
-                {
-                    this.paintLines();
-                }
-            };
-        }
-    }
+    
     paintLines(color = "red")
     {
         for(let relMarker of this.relationMarkers)
@@ -147,10 +111,13 @@ class InteractiveMap
         {
             this.mainFieldGrid.removeChild(this.mainFieldGrid.querySelector("input"));
         }
+        if(this.map == undefined)
+        {
             this.map = HTML.createAndAppend("IMG", this.mainFieldGrid);
-            this.map.src = `/load_image/${this.generalMap.imageId}`;
-            this.map.style.gridArea = "2/1/3/1";
-            HTML.addStyles(["maxWidthInherit", "widthInherit", "border1pix", "bRadius04rem", "borderBox"], [this.map]);         
+        }
+        this.map.src = `/load_image/${this.uncashedPicture(this.generalMap.imageId)}`;
+        this.map.style.gridArea = "2/1/3/1";
+        HTML.addStyles(["maxWidthInherit", "widthInherit", "border1pix", "bRadius04rem", "borderBox"], [this.map]);   
     }
     createMarkerInstance(type, unit, insideUnit)
     {
@@ -220,7 +187,14 @@ class InteractiveMap
             {
                 for(let oneUnit of buffer[oneType])
                 {
-                    oneUnit.otherJsonOption = JSON.parse(oneUnit.otherJsonOption);
+                    try
+                    {
+                        oneUnit.otherJsonOption = JSON.parse(oneUnit.otherJsonOption);
+                    }
+                    catch(except)
+                    {
+                        continue;
+                    }
                     let marker = this.createMarkerInstance(oneType, oneUnit, buffer["insideMarker"].get(oneUnit.textContent));
                     this.Markers[oneType].push(marker);
                     marker.drowMarker();
@@ -243,7 +217,7 @@ class InteractiveMap
     }
     setTools()
     {
-        console.warn("stub");
+        this.setStandartEvents();
     }
     updateRelation(event = (marker)=> marker.updateSpanSize())
     {
@@ -288,5 +262,9 @@ class InteractiveMap
         shell.appendChild(h1);
         endPopup.setInside(shell);
         endPopup.show();
+    }
+    uncashedPicture(imageLink)
+    {
+        return isNaN(imageLink)? `${imageLink}`: `${imageLink}?${Math.random()}`;
     }
 }

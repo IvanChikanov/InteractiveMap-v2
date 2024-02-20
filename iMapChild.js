@@ -11,7 +11,7 @@ class InteractiveMapChild extends InteractiveMap
         }
         else
         {         
-            this.callRender();
+            await this.callRender();
         }
         this.toolsExtension = new ToolsKeeper([
             {title: "Заменить картинку", call: this.setImage.bind(this)},
@@ -58,14 +58,14 @@ class InteractiveMapChild extends InteractiveMap
         this.instructions.onclick = this.instructionsRedactorMode.bind(this);
         this.allMarkersNotification((marker) => marker.redactorMode());
     }
-    callRender()
+    async callRender()
     {
         this.imagesRendering();
         this.map.addEventListener("click", this.createMarkerEvent.bind(this));
     }
     async updateImage(file)
     {
-        await UComm.updateImageUnit(file, this.generalMap); 
+        await UComm.updateImageUnit(file, this.generalMap);
         this.callRender();
     }
     async createMarkerEvent(e)
@@ -103,9 +103,6 @@ class InteractiveMapChild extends InteractiveMap
     }
     setImage()
     {
-        if(this.map){
-            this.mainFieldGrid.removeChild(this.map);
-        }
         this.mainFieldGrid.appendChild(HTML.createFileloaderElement("image/png, image/jpg", this.updateImage.bind(this)));
     }
     async loadUnits()
