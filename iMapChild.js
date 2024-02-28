@@ -2,6 +2,10 @@ class InteractiveMapChild extends InteractiveMap
 {
     toolsExtension;
     preparedField;
+    constructor(grid, cellData)
+    {
+        super(grid);
+    }
     async init(cellId)
     { 
         await super.init(cellId);
@@ -135,13 +139,34 @@ class InteractiveMapChild extends InteractiveMap
     customMarkerAppend()
     {
         let window = new Windows("content-auto");
-        window.setInside(HTML.createFileloaderElement(".png, .jpg, .jpeg, .svg", this.customMarkerSaver.bind(this)));
+        let main = HTML.create("DIV");
+        HTML.addStyles(["grid", "gapFivePix"],[main]);
+        let input = HTML.createAndAppend("INPUT", main);
+        input.type = "file";
+        input.setAttribute("accept", ".png, .jpg, .jpeg, .svg");
+        let enabled = HTML.createAndAppend("DIV", main);
+        for(let customImg of this.customs)
+        {
+            let img = HTML.createAndAppend("IMG", enabled);
+            img.src = `/load_image/${customImg.imageId}`;
+            img.style = "max-width: 100px; max-height: 100px";
+            img.dataset.id = customImg.id;
+            img.onclick = async (e)=>
+            {
+                await UComm.delete(e.target.dataset.id);
+                img.parentNode.removeChild(img);
+            }
+        }        
+        window.setInside(main);
+        window.closeAction(async ()=>{
+            if(input.files[0] != undefined)
+            {
+                let customMarkerUnit = await UComm.getEmpty(this.cellId);
+                customMarkerUnit.tag = "custom";
+                await UComm.updateImageUnit(input.files[0], customMarkerUnit);
+                this.customs.push(customMarkerUnit);
+            }
+        });
         window.show();
-    }
-    async customMarkerSaver(file)
-    {
-        let customMarkerUnit = await UComm.getEmpty(this.cellId);
-        customMarkerUnit.tag = "custom";
-        await UComm.updateImageUnit(file, customMarkerUnit);
     }
 }

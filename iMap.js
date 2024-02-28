@@ -17,6 +17,7 @@ class InteractiveMap
     relationCount = 0;
     checkButtonEnabled = false;
     checkButton;
+    gridFather;
     typeOfMarkers = 
     {
         "ContextMarker": 
@@ -49,6 +50,14 @@ class InteractiveMap
             }
     }
     insideMarkersArray = [];
+    constructor(grid, cellData = null)
+    {
+        this.gridFather = grid;
+        if(cellData != null)
+        {
+            this.unit = cellData.moduleUnits;
+        }
+    }
     async init(cellId)
     {
         this.cellId = cellId;
@@ -137,10 +146,6 @@ class InteractiveMap
         {
             data[type] = [];
         }
-    }
-    setData(data)
-    {
-        this.unit = data.moduleUnits;
     }
     async loadUnits()
     {
