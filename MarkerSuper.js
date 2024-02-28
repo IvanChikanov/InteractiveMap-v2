@@ -109,7 +109,7 @@ class MarkerSuper
         let shell = HTML.create("DIV");
         this.mainInPopup = HTML.create("DIV");
         HTML.addStyles(["grid", "gapFivePix"],[this.mainInPopup]);
-        this.mainInPopup.appendChild(this.chooseMarker(null));
+        this.mainInPopup.appendChild(this.chooseMarker(this.iMapInstance.customs.map(mrk => mrk.imageId)));
         shell.appendChild(this.mainInPopup);
         this.popup.setInside(shell);
         this.popup.closeAction(()=>{

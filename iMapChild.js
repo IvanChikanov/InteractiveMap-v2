@@ -14,6 +14,7 @@ class InteractiveMapChild extends InteractiveMap
             await this.callRender();
         }
         this.toolsExtension = new ToolsKeeper([
+            {title: "Добавить кастомный маркер", src: "/load_image/dot.svg", call: this.customMarkerAppend.bind(this)},
             {title: "Заменить картинку", call: this.setImage.bind(this)},
             {title: "Режим редактирования", call: this.setRedactorMode.bind(this), radio: true},
             {title: "Отображение как в итоговом ЭОМ", call: this.setStandartEvents.bind(this), radio: true},
@@ -130,5 +131,17 @@ class InteractiveMapChild extends InteractiveMap
     getTools()
     {
         return this.toolsExtension;
+    }
+    customMarkerAppend()
+    {
+        let window = new Windows("content-auto");
+        window.setInside(HTML.createFileloaderElement(".png, .jpg, .jpeg, .svg", this.customMarkerSaver.bind(this)));
+        window.show();
+    }
+    async customMarkerSaver(file)
+    {
+        let customMarkerUnit = await UComm.getEmpty(this.cellId);
+        customMarkerUnit.tag = "custom";
+        await UComm.updateImageUnit(file, customMarkerUnit);
     }
 }

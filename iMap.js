@@ -3,6 +3,11 @@ class InteractiveMap
     cellId;
     unit;
     Markers = {};
+    customs = [];
+    needWaiting()
+    {
+        return true;
+    }
     generalMap;
     mainFieldGrid;
     instructions;
@@ -163,8 +168,8 @@ class InteractiveMap
                     }
                     loadBuffer["insideMarker"].set(un.id.toString(), un);
                     break;
-                case "customSvg":
-
+                case "custom":
+                    this.customs.push(un);
                     break;
                 default:
                     console.warn(`unit {${un.id}|${un.tag}} is indefined and will be deleted`);
@@ -176,6 +181,7 @@ class InteractiveMap
         this.map.onload = ()=>{
             this.unitFactory(loadBuffer);
             this.setTools();
+            this.loadedEvent();
         };
         console.timeEnd("time");
     }
@@ -266,5 +272,9 @@ class InteractiveMap
     uncashedPicture(imageLink)
     {
         return isNaN(imageLink)? `${imageLink}`: `${imageLink}?${Math.random()}`;
+    }
+    loadedEvent()
+    {
+        this.mainFieldGrid.dispatchEvent(new CustomEvent("moduleLoaded"));
     }
 }
